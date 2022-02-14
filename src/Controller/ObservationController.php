@@ -80,7 +80,7 @@ class ObservationController extends AbstractController
     }
 
     /**
-     * @Route("/{id}", name="observation_delete", methods={"DELETE"})
+     * @Route("/{id}", name="observation_delete", methods={"POST","DELETE"})
      */
     public function delete(Request $request, EntityManagerInterface $entityManager, Observation $observation): Response
     {

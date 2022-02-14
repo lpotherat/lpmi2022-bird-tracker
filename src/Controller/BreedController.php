@@ -80,7 +80,7 @@ class BreedController extends AbstractController
     }
 
     /**
-     * @Route("/{id}", name="breed_delete", methods={"DELETE"})
+     * @Route("/{id}", name="breed_delete", methods={"POST","DELETE"})
      */
     public function delete(Request $request,EntityManagerInterface $entityManager, Breed $breed): Response
     {

@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\Breed;
 use App\Form\BreedType;
 use App\Repository\BreedRepository;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,14 +30,13 @@ class BreedController extends AbstractController
     /**
      * @Route("/new", name="breed_new", methods={"GET","POST"})
      */
-    public function new(Request $request): Response
+    public function new(Request $request,EntityManager $entityManager): Response
     {
         $breed = new Breed();
         $form = $this->createForm(BreedType::class, $breed);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($breed);
             $entityManager->flush();
 
@@ -61,13 +62,13 @@ class BreedController extends AbstractController
     /**
      * @Route("/{id}/edit", name="breed_edit", methods={"GET","POST"})
      */
-    public function edit(Request $request, Breed $breed): Response
+    public function edit(Request $request,EntityManagerInterface $entityManager, Breed $breed): Response
     {
         $form = $this->createForm(BreedType::class, $breed);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
+            $entityManager->flush();
 
             return $this->redirectToRoute('breed_index');
         }
@@ -81,10 +82,9 @@ class BreedController extends AbstractController
     /**
      * @Route("/{id}", name="breed_delete", methods={"DELETE"})
      */
-    public function delete(Request $request, Breed $breed): Response
+    public function delete(Request $request,EntityManagerInterface $entityManager, Breed $breed): Response
     {
         if ($this->isCsrfTokenValid('delete'.$breed->getId(), $request->request->get('_token'))) {
-            $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($breed);
             $entityManager->flush();
         }

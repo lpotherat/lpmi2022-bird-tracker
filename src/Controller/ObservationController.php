@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\Observation;
 use App\Form\ObservationType;
 use App\Repository\ObservationRepository;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,14 +30,13 @@ class ObservationController extends AbstractController
     /**
      * @Route("/new", name="observation_new", methods={"GET","POST"})
      */
-    public function new(Request $request): Response
+    public function new(Request $request,EntityManagerInterface $entityManager): Response
     {
         $observation = new Observation();
         $form = $this->createForm(ObservationType::class, $observation);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($observation);
             $entityManager->flush();
 
@@ -61,13 +62,13 @@ class ObservationController extends AbstractController
     /**
      * @Route("/{id}/edit", name="observation_edit", methods={"GET","POST"})
      */
-    public function edit(Request $request, Observation $observation): Response
+    public function edit(Request $request,EntityManagerInterface $entityManager, Observation $observation): Response
     {
         $form = $this->createForm(ObservationType::class, $observation);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
+            $entityManager->flush();
 
             return $this->redirectToRoute('observation_index');
         }
@@ -81,10 +82,9 @@ class ObservationController extends AbstractController
     /**
      * @Route("/{id}", name="observation_delete", methods={"DELETE"})
      */
-    public function delete(Request $request, Observation $observation): Response
+    public function delete(Request $request, EntityManagerInterface $entityManager, Observation $observation): Response
     {
         if ($this->isCsrfTokenValid('delete'.$observation->getId(), $request->request->get('_token'))) {
-            $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($observation);
             $entityManager->flush();
         }
